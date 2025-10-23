@@ -4,6 +4,7 @@ import io.github.openfacade.graph.schema.CreateEdgeRequest;
 import io.github.openfacade.graph.schema.CreateEdgeSchemaRequest;
 import io.github.openfacade.graph.schema.CreateNodeRequest;
 import io.github.openfacade.graph.schema.CreateNodeSchemaRequest;
+import io.github.openfacade.graph.schema.DeleteNodeRequest;
 import org.jspecify.annotations.NonNull;
 
 
@@ -15,4 +16,6 @@ public interface GraphOperations {
     void createEdge(@NonNull CreateEdgeRequest createEdgeRequest) throws GraphException;
 
     void createEdgeSchema(@NonNull CreateEdgeSchemaRequest createEdgeSchemaRequest)  throws GraphException;
+    
+    void deleteNode(@NonNull DeleteNodeRequest deleteNodeRequest) throws GraphException;
 }
