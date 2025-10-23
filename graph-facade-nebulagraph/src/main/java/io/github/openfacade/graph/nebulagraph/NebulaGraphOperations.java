@@ -6,6 +6,7 @@ import io.github.openfacade.graph.schema.CreateEdgeRequest;
 import io.github.openfacade.graph.schema.CreateEdgeSchemaRequest;
 import io.github.openfacade.graph.schema.CreateNodeRequest;
 import io.github.openfacade.graph.schema.CreateNodeSchemaRequest;
+import io.github.openfacade.graph.schema.DeleteNodeRequest;
 import org.jspecify.annotations.NonNull;
 
 /**
@@ -32,5 +33,10 @@ public class NebulaGraphOperations implements GraphOperations {
     @Override
     public void createEdgeSchema(@NonNull CreateEdgeSchemaRequest createEdgeSchemaRequest) throws GraphException {
         throw new UnsupportedOperationException("NebulaGraph createEdgeSchemaRequest operation not yet implemented");
+    }
+
+    @Override
+    public void deleteNode(@NonNull DeleteNodeRequest deleteNodeRequest) throws GraphException {
+        throw new UnsupportedOperationException("NebulaGraph deleteNode operation not yet implemented");
     }
 }
