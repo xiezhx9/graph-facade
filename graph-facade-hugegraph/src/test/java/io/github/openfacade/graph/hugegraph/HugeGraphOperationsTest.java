@@ -2,6 +2,8 @@ package io.github.openfacade.graph.hugegraph;
 
 import io.github.openfacade.graph.api.DataType;
 import io.github.openfacade.graph.api.GraphException;
+import io.github.openfacade.graph.schema.CreateEdgeRequest;
+import io.github.openfacade.graph.schema.CreateEdgeSchemaRequest;
 import io.github.openfacade.graph.schema.CreateNodeRequest;
 import io.github.openfacade.graph.schema.CreateNodeSchemaRequest;
 import org.apache.hugegraph.driver.HugeClient;
@@ -14,6 +16,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -86,5 +89,54 @@ class HugeGraphOperationsTest {
         assertEquals("person", createdVertex.label());
         assertEquals("Alice", createdVertex.property("name"));
         assertEquals(30, createdVertex.property("age"));
+    }
+
+    @Test
+    void testCreateEdgeSchemaAndEdgeSuccess() throws GraphException {
+        // First create node schemas and nodes that will be connected by the edge
+        String personSchemaName = "person";
+        CreateNodeSchemaRequest personSchemaReq = CreateNodeSchemaRequest.createNodeSchemaRequest(personSchemaName,
+                Map.of("name", DataType.TEXT, "age", DataType.INT));
+        operations.createNodeSchema(personSchemaReq);
+
+        // Create source node
+        String aliceId = "alice";
+        Map<String, Object> aliceProperties = Map.of(
+                "name", "Alice",
+                "age", 30);
+        CreateNodeRequest aliceReq = CreateNodeRequest.createNodeRequest(aliceId, personSchemaName, aliceProperties);
+        operations.createNode(aliceReq);
+
+        // Create target node
+        String bobId = "bob";
+        Map<String, Object> bobProperties = Map.of(
+                "name", "Bob",
+                "age", 25);
+        CreateNodeRequest bobReq = CreateNodeRequest.createNodeRequest(bobId, personSchemaName, bobProperties);
+        operations.createNode(bobReq);
+
+        // Create edge schema
+        String knowsSchemaName = "knows";
+        CreateEdgeSchemaRequest edgeSchemaReq = new CreateEdgeSchemaRequest();
+        edgeSchemaReq.setName(knowsSchemaName);
+        edgeSchemaReq.setSourceNodeSchemaName(personSchemaName);
+        edgeSchemaReq.setTargetNodeSchemaName(personSchemaName);
+        edgeSchemaReq.setPropertyKeys(Map.of(
+                "weight", DataType.DOUBLE));
+        operations.createEdgeSchema(edgeSchemaReq);
+
+        // Create edge
+        Map<String, Object> edgeProperties = new HashMap<>();
+        edgeProperties.put("sourceId", aliceId);
+        edgeProperties.put("targetId", bobId);
+        edgeProperties.put("weight", 0.8);
+
+        CreateEdgeRequest edgeReq = new CreateEdgeRequest();
+        edgeReq.setEdgeName("alice_knows_bob");
+        edgeReq.setEdgeSchemaName(knowsSchemaName);
+        edgeReq.setProperties(edgeProperties);
+
+        // This should not throw an exception
+        operations.createEdge(edgeReq);
     }
 }
